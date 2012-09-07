@@ -3,11 +3,13 @@ package emitreader
 import akka.actor.{Props, ActorSystem}
 import java.util.Date
 
-object TestApp {
+object EmitReaderApp {
+  val comPortName = "tty.PL2303"
+
   def main(args: Array[String]) {
     val decoder = args match {
-      case Array("time", _*) =>  Decoder.timeOnly _
-      case _                 => Decoder.full _
+      case Array("time") => Decoder.timeOnly _
+      case _             => Decoder.full _
     }
     def onEmitData = { (readTime: Long, emitCardId: Int, controls: Seq[(Int, Int)]) =>
       println("Card id: %d, Read time: %s" format (emitCardId, new Date(readTime).toString))
@@ -17,10 +19,8 @@ object TestApp {
       }
     }
 
-    new EmitReaderUnit("tty.PL2303", onEmitData, decoder = decoder)
+    new EmitReaderUnit(comPortName, onEmitData, decoder = decoder)
 
-    while (true) {
-      Thread.sleep(100)
-    }
+    while (true) Thread.sleep(100)
   }
 }
