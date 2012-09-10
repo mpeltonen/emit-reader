@@ -4,25 +4,30 @@ import akka.actor._
 import akka.util.ByteString
 import concurrent.util.Duration
 import java.util.concurrent.TimeUnit
-import akka.actor.IO.Iteratee
 
-class EmitReaderUnit(serialPortName: String, callback: (Long, Int, Seq[(Int, Int)]) => Unit, decoder: ((Long, Int, Seq[(Int, Int)]) => Unit) => Iteratee[Unit] = Decoder.full) {
+class EmitReaderUnit(serialPortName: String, callback: (Long, Int, Seq[(Int, Int)]) => Unit, decoder: => IO.Iteratee[(Long, Int, Seq[(Int, Int)])] = Decoder.full) {
   val system = ActorSystem("%s-%s".format(getClass.getSimpleName, serialPortName).replace('.', '-'))
   val handler = system.actorOf(Props(new Handler))
-  val state = IO.IterateeRef.Map.sync[String]()
+  var iterateeState: IO.IterateeRefSync[(Long, Int, Seq[(Int, Int)])] = new IO.IterateeRefSync(decoder)
   startSerialPort(handler)
 
   private class Handler extends Actor {
     def receive = {
       case chunk: IO.Chunk => {
-        state(serialPortName) flatMap (_ => decoder(callback))
-        state(serialPortName) apply chunk
+        iterateeState apply chunk
         context.setReceiveTimeout(Duration(30, TimeUnit.MILLISECONDS))
       }
       case ReceiveTimeout => {
         context.resetReceiveTimeout()
-        state(serialPortName) apply IO.EOF
-        state -= serialPortName
+        iterateeState apply IO.EOF
+        iterateeState.value match {
+          case (iter @ IO.Done(_), _) => {
+            val (readTime, emitId, punches) = iter.get
+            callback(readTime, emitId, punches)
+          }
+          case _ =>
+        }
+        iterateeState = new IO.IterateeRefSync(decoder)
       }
     }
   }

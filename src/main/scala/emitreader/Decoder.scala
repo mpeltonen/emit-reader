@@ -5,7 +5,7 @@ import akka.util.ByteString
 import java.nio.ByteOrder
 
 object Decoder {
-  def full(callback: (Long, Int, Seq[(Int, Int)]) => Unit): IO.Iteratee[Unit] = {
+  def full: IO.Iteratee[(Long, Int, Seq[(Int, Int)])] = try {
     for {
       prefix             <- prefixDecoder
       id                 <- IO.take(3)
@@ -22,12 +22,16 @@ object Decoder {
       if (checksumOk(allBytes)) {
         val iterator = punchingData.iterator
         val punches = for (i <- 0 until 50) yield (unsigned(iterator.getByte), iterator.getShort(ByteOrder.LITTLE_ENDIAN).toInt)
-        callback(System.currentTimeMillis, decodeId(id), punches)
+        (System.currentTimeMillis, decodeId(id), punches)
+      } else {
+        throw new IllegalStateException("Checksum error")
       }
     }
+  } catch {
+    case e: Exception => IO.Failure(e)
   }
 
-  def timeOnly(callback: (Long, Int, Seq[(Int, Int)]) => Unit): IO.Iteratee[Unit] = {
+  def timeOnly: IO.Iteratee[(Long, Int, Seq[(Int, Int)])] = try {
     for {
       prefix             <- prefixDecoder
       id                 <- IO.take(3)
@@ -38,8 +42,11 @@ object Decoder {
       checksum1          <- IO.take(1)
     } yield {
       val checksumBytes = id ++ unused1 ++ cardProductionWeek ++ cardProductionYear ++ unused2 ++ checksum1
-      if (checksumOk(checksumBytes)) callback(System.currentTimeMillis, decodeId(id), Seq())
+      if (checksumOk(checksumBytes)) (System.currentTimeMillis, decodeId(id), Seq())
+      else throw new IllegalStateException("Checksum error")
     }
+  } catch {
+    case e: IllegalStateException => IO.Failure(e)
   }
 
   private def prefixDecoder = IO.takeUntil(ByteString(0xFF.toByte, 0xFF.toByte), true)

@@ -1,6 +1,5 @@
 package emitreader
 
-import akka.actor.{Props, ActorSystem}
 import java.util.Date
 
 object EmitReaderApp {
@@ -8,8 +7,8 @@ object EmitReaderApp {
 
   def main(args: Array[String]) {
     val decoder = args match {
-      case Array("time") => Decoder.timeOnly _
-      case _             => Decoder.full _
+      case Array("time") => Decoder.timeOnly
+      case _             => Decoder.full
     }
     def onEmitData = { (readTime: Long, emitCardId: Int, controls: Seq[(Int, Int)]) =>
       println("Card id: %d, Read time: %s" format (emitCardId, new Date(readTime).toString))
