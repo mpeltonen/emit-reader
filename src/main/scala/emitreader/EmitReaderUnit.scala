@@ -2,7 +2,7 @@ package emitreader
 
 import akka.actor._
 import akka.util.ByteString
-import concurrent.util.Duration
+import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
 
 class EmitReaderUnit(serialPortName: String, callback: (Long, Int, Seq[(Int, Int)]) => Unit, decoder: => IO.Iteratee[(Long, Int, Seq[(Int, Int)])] = Decoder.full) {
@@ -18,7 +18,7 @@ class EmitReaderUnit(serialPortName: String, callback: (Long, Int, Seq[(Int, Int
         context.setReceiveTimeout(Duration(30, TimeUnit.MILLISECONDS))
       }
       case ReceiveTimeout => {
-        context.resetReceiveTimeout()
+        context.setReceiveTimeout(Duration.Undefined)
         iterateeState apply IO.EOF
         iterateeState.value match {
           case (iter @ IO.Done(_), _) => {
