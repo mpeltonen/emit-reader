@@ -21,8 +21,7 @@ class EmitReaderUnit(serialPortName: String, callback: (Long, Int, Seq[(Int, Int
         context.setReceiveTimeout(Duration.Undefined)
         iterateeState apply IO.EOF
         iterateeState.value match {
-          case (iter @ IO.Done(_), _) => {
-            val (readTime, emitId, punches) = iter.get
+          case (IO.Done((readTime, emitId, punches)), _) => {
             callback(readTime, emitId, punches)
           }
           case _ =>
