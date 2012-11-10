@@ -1,6 +1,7 @@
 package emitreader
 
 import java.util.Date
+import Decoder._
 
 object EmitReaderApp {
   val comPortName = "tty.PL2303"
@@ -10,11 +11,11 @@ object EmitReaderApp {
       case Array("time") => Decoder.timeOnly
       case _             => Decoder.full
     }
-    def onEmitData = { (readTime: Long, emitCardId: Int, controls: Seq[(Int, Int)]) =>
+    def onEmitData = { (readTime: ReadingTime, emitCardId: EmitCardId, punches: Punches) =>
       println("Card id: %d, Read time: %s" format (emitCardId, new Date(readTime).toString))
-      if (controls.nonEmpty) {
+      if (punches.nonEmpty) {
         println("(control code, split time)\n--------------------------")
-        println(controls.map(_.toString()).mkString("\n"))
+        println(punches.map(_.toString()).mkString("\n"))
       }
     }
 

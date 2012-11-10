@@ -4,11 +4,12 @@ import akka.actor._
 import akka.util.ByteString
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
+import Decoder._
 
-class EmitReaderUnit(serialPortName: String, callback: (Long, Int, Seq[(Int, Int)]) => Unit, decoder: => IO.Iteratee[(Long, Int, Seq[(Int, Int)])] = Decoder.full) {
+class EmitReaderUnit(serialPortName: String, callback: (ReadingTime, EmitCardId, Punches) => Unit, decoder: => IO.Iteratee[(ReadingTime, EmitCardId, Punches)] = Decoder.full) {
   val system = ActorSystem("%s-%s".format(getClass.getSimpleName, serialPortName).replace('.', '-'))
   val handler = system.actorOf(Props(new Handler))
-  var iterateeState: IO.IterateeRefSync[(Long, Int, Seq[(Int, Int)])] = new IO.IterateeRefSync(decoder)
+  var iterateeState: IO.IterateeRefSync[(ReadingTime, EmitCardId, Punches)] = new IO.IterateeRefSync(decoder)
   startSerialPort(handler)
 
   private class Handler extends Actor {

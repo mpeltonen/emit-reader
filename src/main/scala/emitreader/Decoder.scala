@@ -5,7 +5,13 @@ import akka.util.ByteString
 import java.nio.ByteOrder
 
 object Decoder {
-  def full: IO.Iteratee[(Long, Int, Seq[(Int, Int)])] =
+  type ReadingTime = Long
+  type EmitCardId = Long
+  type SplitTime = Int
+  type ControlCode = Int
+  type Punches = Seq[(ControlCode, SplitTime)]
+
+  def full: IO.Iteratee[(ReadingTime, EmitCardId, Punches)] =
     for {
       prefix             <- prefixDecoder
       id                 <- IO.take(3)
@@ -27,7 +33,7 @@ object Decoder {
       (System.currentTimeMillis, decodeId(id), punches)
     }
 
-  def timeOnly: IO.Iteratee[(Long, Int, Seq[(Int, Int)])] =
+  def timeOnly: IO.Iteratee[(ReadingTime, EmitCardId, Punches)] =
     for {
       prefix             <- prefixDecoder
       id                 <- IO.take(3)
