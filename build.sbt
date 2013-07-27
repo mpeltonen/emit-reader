@@ -8,7 +8,7 @@ scalaVersion := "2.10.2"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.2.0",
-  "com.sparetimelabs" % "purejavacomm" % "0.0.9"
+  "com.sparetimelabs" % "purejavacomm" % "0.0.17"
 )
 
 resolvers += "sparetimelabs" at "http://www.sparetimelabs.com/maven2/"
