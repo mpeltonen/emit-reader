@@ -1,16 +1,21 @@
 package emitreader
 
 import java.util.Date
-import emitreader.Pipeline.{AllControls, SplitTimeOnly}
+
+import purejavacomm.CommPortIdentifier
+import purejavacomm.CommPortIdentifier.getPortIdentifiers
+
+import scala.collection.JavaConverters._
 
 object EmitReaderApp {
-  val comPortName = "tty.PL2303"
-
   def main(args: Array[String]) {
-    val ctx = args match {
-      case Array("time") => SplitTimeOnly
-      case _ => AllControls
+    val frameLength = args match {
+      case Array("time") => 10
+      case _ => 217
     }
+
+    val comPorts: List[CommPortIdentifier] = getPortIdentifiers.asScala.filter(p => p.getName.startsWith("tty")).toList
+    val comPort = comPorts.find(_.getName.contains("PL2303")).getOrElse(sys.error("PL2303 serial port not found!"))
 
     def onEmitData  = { data: ((ReadingTime, EmitCardId, Punches)) =>
       val (readingTime, cardId, punches) = data
@@ -21,7 +26,7 @@ object EmitReaderApp {
       }
     }
 
-    new EmitReaderUnit(comPortName, ctx, onEmitData)
+    new EmitReaderUnit(comPort.getName, frameLength, onEmitData)
 
     while (true) Thread.sleep(100)
   }

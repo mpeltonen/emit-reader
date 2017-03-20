@@ -1,19 +1,28 @@
 package emitreader
 
+import akka.actor.{ActorRef, ActorSystem}
 import akka.util.ByteString
-import emitreader.Pipeline.EmitEptPipelineContext
-import akka.io.{PipelineInjector, PipelineFactory}
+import akka.stream.{ActorMaterializer, OverflowStrategy}
+import akka.stream.scaladsl.{Sink, Source}
 
-class EmitReaderUnit(serialPortName: String, ctx: EmitEptPipelineContext, callback: ((ReadingTime, EmitCardId, Punches)) => Unit) {
-  val pipeline = PipelineFactory.buildWithSinkFunctions(ctx, Pipeline.stages)(_ => (), e => callback(e.get))
-  startSerialPort(pipeline)
+class EmitReaderUnit(serialPortName: String, frameLength: Int, callback: ((ReadingTime, EmitCardId, Punches)) => Unit) {
+  implicit val system = ActorSystem("emit-reader")
+  implicit val materializer = ActorMaterializer()
+  val source: Source[ByteString, ActorRef] = Source.actorRef[ByteString](2048, OverflowStrategy.dropBuffer)
+  val sink = Sink.foreach[(ReadingTime, EmitCardId, Punches)](s => callback(s))
+  val flow = source
+    .via(new XorStage())
+    .via(new FramingStage(frameLength))
+    .via(new ChecksumCheckStage(frameLength))
+    .via(new DecodeDataStage(frameLength))
+    .to(sink)
+  startSerialPort(flow.run())
 
-  def startSerialPort(pipeline: PipelineInjector[Unit, ByteString]): Unit = {
+  def startSerialPort(streamSource: ActorRef): Unit = {
     new SerialPort(serialPortName).onDataAvailable { stream =>
-       val expected = stream.available
-       val buffer = new Array[Byte](expected)
-       val actual = stream.read(buffer, 0, expected)
-       pipeline.injectEvent(ByteString.fromArray(buffer, 0, actual))
+      val buffer = new Array[Byte](1024)
+      val actual = stream.read(buffer, 0, buffer.length)
+      streamSource ! ByteString.fromArray(buffer, 0, actual)
     }
   }
 }
