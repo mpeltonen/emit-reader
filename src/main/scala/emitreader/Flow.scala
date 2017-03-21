@@ -65,13 +65,14 @@ class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, (Readi
     @inline def unsigned(b: Byte) = b & 0xFF
 
     private def decodeControlData(bytes: ByteIterator): Seq[(ControlCode, SplitTime, LowBattery)] = {
-      bytes.sliding(4, step = 3).take(50).foldLeft(Seq[(ControlCode, SplitTime, LowBattery)]()) { (acc, punch) => {
+      val punches = bytes.sliding(4, step = 3).take(50).foldLeft(Seq[(ControlCode, SplitTime, LowBattery)]()) { (acc, punch) => {
         if (!isLowBatteryMarkerPunch(punch)) {
           val (controlCode, punchTime) = (unsigned(punch(0)), (unsigned(punch(1)) | unsigned(punch(2)) << 8).toLong)
           val isLowBattery = (acc.length < 50 && isLowBatteryMarkerCode(unsigned(punch(3))))
           acc :+ (controlCode, punchTime, isLowBattery)
         } else acc
       }}
+      punches.reverse.dropWhile(_._1 == 0).reverse
     }
 
     override def onPush(): Unit = {
