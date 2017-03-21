@@ -9,8 +9,6 @@ import java.io.InputStream
 class SerialPort(portName: String) {
   val portId = getPortIdentifiers.asScala.find(_.getName.equals(portName)).getOrElse(sys.error("Serial port %s not found" format portName))
   val port = portId.open(this.getClass.getName, 1000).asInstanceOf[purejavacomm.SerialPort]
-  port.enableReceiveThreshold(10)
-  port.disableReceiveTimeout()
   port.setSerialPortParams(9600, DATABITS_8, STOPBITS_1, PARITY_NONE)
   port.setFlowControlMode(FLOWCONTROL_XONXOFF_IN)
 
