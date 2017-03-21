@@ -60,15 +60,18 @@ class ChecksumCheckStage(frameLen: Int) extends EmitEptFlowStage[ByteString, Byt
 class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, (ReadingTime, EmitCardId, Punches)] {
   override def createLogic(attr: Attributes) = new EmitEptFlowStageLogic(shape) {
     implicit val byteOrder = ByteOrder.LITTLE_ENDIAN
-    @inline def isLowBattery(code: ControlCode) = code == 99
+    @inline def isLowBatteryMarkerCode(code: ControlCode) = code == 99
+    @inline def isLowBatteryMarkerPunch(punch: Seq[Byte]) = isLowBatteryMarkerCode(unsigned(punch(0)))
     @inline def unsigned(b: Byte) = b & 0xFF
 
     private def decodeControlData(bytes: ByteIterator): Seq[(ControlCode, SplitTime, LowBattery)] = {
-      bytes.grouped(3).take(50).foldLeft((Seq[(ControlCode, SplitTime, LowBattery)](), false)) { (acc, ctrlData) =>
-        val (controlCode, punchTime) = (unsigned(ctrlData(0)), (unsigned(ctrlData(1)) | unsigned(ctrlData(2)) << 8).toLong)
-        if (isLowBattery(controlCode)) (acc._1, true)
-        else (acc._1 :+ (controlCode, punchTime, acc._2), false)
-      }._1
+      bytes.sliding(4, step = 3).take(50).foldLeft(Seq[(ControlCode, SplitTime, LowBattery)]()) { (acc, punch) => {
+        if (!isLowBatteryMarkerPunch(punch)) {
+          val (controlCode, punchTime) = (unsigned(punch(0)), (unsigned(punch(1)) | unsigned(punch(2)) << 8).toLong)
+          val isLowBattery = (acc.length < 50 && isLowBatteryMarkerCode(unsigned(punch(3))))
+          acc :+ (controlCode, punchTime, isLowBattery)
+        } else acc
+      }}
     }
 
     override def onPush(): Unit = {
