@@ -1,9 +1,5 @@
 
 package object emitreader {
-  type ReadingTime = Long
-  type EmitCardId = Long
-  type SplitTime = Long
-  type ControlCode = Int
-  type LowBattery = Boolean
-  type Punches = Seq[(ControlCode, SplitTime, LowBattery)]
+  case class PunchCardData(readingTime: Long, cardId: Long, punches: Seq[Punch])
+  case class Punch(controlCode: Int, splitTime: Long, lowBattery: Boolean)
 }

@@ -57,22 +57,22 @@ class ChecksumCheckStage(frameLen: Int) extends EmitEptFlowStage[ByteString, Byt
   }
 }
 
-class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, (ReadingTime, EmitCardId, Punches)] {
+class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, PunchCardData] {
   override def createLogic(attr: Attributes) = new EmitEptFlowStageLogic(shape) {
     implicit val byteOrder = ByteOrder.LITTLE_ENDIAN
-    @inline def isLowBatteryMarkerCode(code: ControlCode) = code == 99
+    @inline def isLowBatteryMarkerCode(code: Int) = code == 99
     @inline def isLowBatteryMarkerPunch(punch: Seq[Byte]) = isLowBatteryMarkerCode(unsigned(punch(0)))
     @inline def unsigned(b: Byte) = b & 0xFF
 
-    private def decodeControlData(bytes: ByteIterator): Seq[(ControlCode, SplitTime, LowBattery)] = {
-      val punches = bytes.sliding(4, step = 3).take(50).foldLeft(Seq[(ControlCode, SplitTime, LowBattery)]()) { (acc, punch) => {
+    private def decodeControlData(bytes: ByteIterator): Seq[Punch] = {
+      val punches = bytes.sliding(4, step = 3).take(50).foldLeft(Seq[Punch]()) { (acc, punch) => {
         if (!isLowBatteryMarkerPunch(punch)) {
           val (controlCode, punchTime) = (unsigned(punch(0)), (unsigned(punch(1)) | unsigned(punch(2)) << 8).toLong)
           val isLowBattery = (acc.length < 50 && isLowBatteryMarkerCode(unsigned(punch(3))))
-          acc :+ (controlCode, punchTime, isLowBattery)
+          acc :+ Punch(controlCode, punchTime, isLowBattery)
         } else acc
       }}
-      punches.reverse.dropWhile(_._1 == 0).reverse
+      punches.reverse.dropWhile(_.controlCode == 0).reverse
     }
 
     override def onPush(): Unit = {
@@ -83,7 +83,7 @@ class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, (Readi
       frame.drop(5)
       val controlData = if (frameLen > 10) decodeControlData(frame) else Seq.empty
 
-      push(out, (System.currentTimeMillis(), cardId, controlData))
+      push(out, PunchCardData(System.currentTimeMillis(), cardId, controlData))
       pull(in)
     }
   }

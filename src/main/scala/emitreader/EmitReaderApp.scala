@@ -17,9 +17,9 @@ object EmitReaderApp {
     val comPorts: List[CommPortIdentifier] = getPortIdentifiers.asScala.filter(p => p.getName.startsWith("tty")).toList
     val comPort = comPorts.find(_.getName.contains("PL2303")).getOrElse(sys.error("PL2303 serial port not found!"))
 
-    def onEmitData  = { data: ((ReadingTime, EmitCardId, Punches)) =>
-      val (readingTime, cardId, punches) = data
-      println("Card id: %d, Read time: %s" format (cardId, new Date(readingTime).toString))
+    def onEmitData  = { cardData: PunchCardData =>
+      println("Card id: %d, Read time: %s" format (cardData.cardId, new Date(cardData.readingTime).toString))
+      val punches = cardData.punches
       if (punches.nonEmpty) {
         println("(control code, split time, low battery)\n--------------------------")
         println(punches.map(_.toString()).mkString("\n"))
