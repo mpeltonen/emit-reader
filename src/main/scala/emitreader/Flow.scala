@@ -73,7 +73,7 @@ private class ChecksumCheckStage(frameLen: Int) extends EmitEptFlowStage[ByteStr
   }
 }
 
-private class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, PunchCardData] {
+private class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, EmitCard] {
   override def createLogic(attr: Attributes) = new EmitEptFlowStageLogic(shape) {
     implicit val byteOrder = ByteOrder.LITTLE_ENDIAN
     @inline def isLowBatteryMarkerCode(code: Int) = code == 99
@@ -99,7 +99,7 @@ private class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString
       frame.drop(5)
       val controlData = if (frameLen > 10) decodeControlData(frame) else Seq.empty
 
-      push(out, PunchCardData(System.currentTimeMillis(), cardId, controlData))
+      push(out, EmitCard(cardId, System.currentTimeMillis(), controlData))
       pull(in)
     }
   }

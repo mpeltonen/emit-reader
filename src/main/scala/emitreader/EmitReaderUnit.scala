@@ -5,11 +5,11 @@ import akka.util.ByteString
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.stream.scaladsl.{Sink, Source}
 
-class EmitReaderUnit(serialPortName: String, frameLength: Int, callback: PunchCardData => Unit) {
+class EmitReaderUnit(serialPortName: String, frameLength: Int, callback: EmitCard => Unit) {
   implicit val system = ActorSystem("emit-reader")
   implicit val materializer = ActorMaterializer()
   val source: Source[ByteString, ActorRef] = Source.actorRef[ByteString](2048, OverflowStrategy.dropBuffer)
-  val sink = Sink.foreach[PunchCardData](pcd => callback(pcd))
+  val sink = Sink.foreach[EmitCard](pcd => callback(pcd))
   val flow = source.via(EmitEptFlow(frameLength)).to(sink)
   startSerialPort(flow.run())
 
