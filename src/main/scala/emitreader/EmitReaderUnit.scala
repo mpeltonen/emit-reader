@@ -10,12 +10,7 @@ class EmitReaderUnit(serialPortName: String, frameLength: Int, callback: PunchCa
   implicit val materializer = ActorMaterializer()
   val source: Source[ByteString, ActorRef] = Source.actorRef[ByteString](2048, OverflowStrategy.dropBuffer)
   val sink = Sink.foreach[PunchCardData](pcd => callback(pcd))
-  val flow = source
-    .via(new XorStage())
-    .via(new FramingStage(frameLength))
-    .via(new ChecksumCheckStage(frameLength))
-    .via(new DecodeDataStage(frameLength))
-    .to(sink)
+  val flow = source.via(EmitEptFlow(frameLength)).to(sink)
   startSerialPort(flow.run())
 
   def startSerialPort(streamSource: ActorRef): Unit = {

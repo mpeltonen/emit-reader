@@ -5,8 +5,24 @@ import java.nio.ByteOrder
 import akka.stream.stage.{GraphStage, GraphStageLogicWithLogging, InHandler, OutHandler}
 import akka.stream.{Attributes, FlowShape, Inlet, Outlet}
 import akka.util.{ByteIterator, ByteString}
+import akka.stream.scaladsl.GraphDSL
+import akka.stream.scaladsl.GraphDSL.Implicits._
 
-class XorStage extends EmitEptFlowStage[ByteString, ByteString] {
+object EmitEptFlow {
+  def apply(frameLen: Int) = {
+    GraphDSL.create() { implicit builder =>
+      val A = builder.add(new XorStage())
+      val B = builder.add(new FramingStage(frameLen))
+      val C = builder.add(new ChecksumCheckStage(frameLen))
+      val D = builder.add(new DecodeDataStage(frameLen))
+
+      A ~> B ~> C ~> D
+      FlowShape(A.in, D.out)
+    }.named(EmitEptFlow.getClass.getSimpleName)
+  }
+}
+
+private class XorStage extends EmitEptFlowStage[ByteString, ByteString] {
   override def createLogic(inheritedAttributes: Attributes) = new EmitEptFlowStageLogic(shape) {
     override def onPush(): Unit = {
       push(out, grab(in).map(b => (b ^ 0xDF.toByte).toByte))
@@ -15,7 +31,7 @@ class XorStage extends EmitEptFlowStage[ByteString, ByteString] {
   }
 }
 
-class FramingStage(frameLen: Int) extends EmitEptFlowStage[ByteString, ByteString] {
+private class FramingStage(frameLen: Int) extends EmitEptFlowStage[ByteString, ByteString] {
   override def createLogic(inheritedAttributes: Attributes) = new EmitEptFlowStageLogic(shape) {
     var buffer: ByteString = ByteString.empty
 
@@ -40,7 +56,7 @@ class FramingStage(frameLen: Int) extends EmitEptFlowStage[ByteString, ByteStrin
   }
 }
 
-class ChecksumCheckStage(frameLen: Int) extends EmitEptFlowStage[ByteString, ByteString] {
+private class ChecksumCheckStage(frameLen: Int) extends EmitEptFlowStage[ByteString, ByteString] {
   override def createLogic(inheritedAttributes: Attributes) = new EmitEptFlowStageLogic(shape) {
     def checksumBytes(frame: ByteString) = if (frameLen == 10) frame.drop(2) else frame
     def checksumOk(frame: ByteString): Boolean = frame.nonEmpty && checksumBytes(frame).sum % 256 == 0
@@ -57,7 +73,7 @@ class ChecksumCheckStage(frameLen: Int) extends EmitEptFlowStage[ByteString, Byt
   }
 }
 
-class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, PunchCardData] {
+private class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, PunchCardData] {
   override def createLogic(attr: Attributes) = new EmitEptFlowStageLogic(shape) {
     implicit val byteOrder = ByteOrder.LITTLE_ENDIAN
     @inline def isLowBatteryMarkerCode(code: Int) = code == 99
@@ -89,7 +105,7 @@ class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, PunchC
   }
 }
 
-abstract class EmitEptFlowStage[IN, OUT] extends GraphStage[FlowShape[IN, OUT]] {
+private abstract class EmitEptFlowStage[IN, OUT] extends GraphStage[FlowShape[IN, OUT]] {
   val in = Inlet[IN](s"${this.getClass.getSimpleName}.in")
   val out = Outlet[OUT](s"${this.getClass.getSimpleName}.out")
 
