@@ -1,4 +1,5 @@
 lazy val akkaVersion = "2.4.17"
+lazy val scalaFxVersion = "8.0.102-R11"
 
 lazy val emitreader = (project in file(".")).
   settings(
@@ -10,6 +11,7 @@ lazy val emitreader = (project in file(".")).
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-actor" % akkaVersion,
       "com.typesafe.akka" %% "akka-stream" % akkaVersion,
-      "com.sparetimelabs" % "purejavacomm" % "1.0.1"
+      "com.sparetimelabs" % "purejavacomm" % "1.0.1",
+      "org.scalafx" %% "scalafx" % scalaFxVersion
     )
   )

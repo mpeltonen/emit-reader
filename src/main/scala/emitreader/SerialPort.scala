@@ -12,6 +12,8 @@ class SerialPort(portName: String) {
   port.setSerialPortParams(9600, DATABITS_8, STOPBITS_1, PARITY_NONE)
   port.setFlowControlMode(FLOWCONTROL_XONXOFF_IN)
 
+  def close(): Unit = port.close()
+
   def onDataAvailable(callback: (InputStream) => Unit): Unit = {
     port.notifyOnDataAvailable(true)
     port.addEventListener((event: SerialPortEvent) =>
