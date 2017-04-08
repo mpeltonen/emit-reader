@@ -2,7 +2,7 @@ package emitreader.domain
 
 import akka.stream.scaladsl.Sink
 
-trait EmitDataTarget {
-  def getEmitDataSink(): Sink[EmitCard, _]
+trait EmitDataTarget[T] {
+  def getEmitDataSink(): Sink[T, _]
   def terminate()
 }

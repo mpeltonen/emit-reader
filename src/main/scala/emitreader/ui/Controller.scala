@@ -4,11 +4,11 @@ import emitreader.domain._
 import emitreader.flow.EmitReaderFlow
 
 class Controller(val model: ViewModel) {
-  var emitReaderFlow: Option[EmitReaderFlow] = None
+  var emitReaderFlow: Option[EmitReaderFlow[_]] = None
 
   def onStartButtonClick(): Unit = {
     val sourceType: EmitDataSourceType = model.selectedSourceType()
-    val targetType: EmitDataTargetType = model.selectedTargetType()
+    val targetType: EmitDataTargetType[_] = model.selectedTargetType()
     val decodeType: DecoderType = model.selectedDecoderType()
 
     emitReaderFlow = Some(new EmitReaderFlow(sourceType, decodeType, targetType))

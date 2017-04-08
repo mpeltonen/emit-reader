@@ -8,7 +8,7 @@ import scalafx.scene.layout.Priority
 class TargetPane(viewModel: ViewModel) extends DefaultVBox {
   val title = new TitleLabel("Target")
 
-  val targetTypeSelection = new ComboBox[EmitDataTargetType](viewModel.targetTypes) {
+  val targetTypeSelection = new ComboBox[EmitDataTargetType[_]](viewModel.targetTypes) {
     maxWidth = Double.MaxValue
     viewModel.selectedTargetType <== selectionModel().selectedItemProperty()
   }
@@ -18,6 +18,9 @@ class TargetPane(viewModel: ViewModel) extends DefaultVBox {
   viewModel.selectedTargetType.onChange { (_, _, newTargetType) => {
     val targetUiPane = newTargetType.getUiPane(viewModel)
     scalafx.scene.layout.VBox.setVgrow(targetUiPane, Priority.Always)
+    if (children.size() > 2) {
+      children.remove(2)
+    }
     children.add(targetUiPane)
   }}
 

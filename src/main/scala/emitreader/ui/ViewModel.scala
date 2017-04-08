@@ -3,6 +3,7 @@ package emitreader.ui
 import emitreader.domain._
 import emitreader.sources.emulator.EmulatorEmitDataSourceType
 import emitreader.sources.serialport.SerialPortSourceType
+import emitreader.targets.binaryfile.BinaryFileTargetType
 import emitreader.targets.uitable.UiTableTargetType
 
 import scalafx.beans.property.{BooleanProperty, ObjectProperty, Property}
@@ -15,8 +16,8 @@ class ViewModel {
   val decoderTypes: ObservableBuffer[DecoderType] = ObservableBuffer(FullDecoderType(), SplitTimeOnlyDecoderType())
   val selectedDecoderType: Property[DecoderType, DecoderType] = ObjectProperty(decoderTypes(0))
 
-  val targetTypes: ObservableBuffer[EmitDataTargetType] = ObservableBuffer(new UiTableTargetType())
-  val selectedTargetType: Property[EmitDataTargetType, EmitDataTargetType] = ObjectProperty(targetTypes(0))
+  val targetTypes: ObservableBuffer[EmitDataTargetType[_]] = ObservableBuffer(new UiTableTargetType(), new BinaryFileTargetType())
+  val selectedTargetType: Property[EmitDataTargetType[_], EmitDataTargetType[_]] = ObjectProperty(targetTypes(0))
 
   val isStarted: Property[Boolean, java.lang.Boolean] = BooleanProperty(false)
   val appQuitRequested: Property[Boolean, java.lang.Boolean] = BooleanProperty(false)
