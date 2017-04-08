@@ -6,7 +6,7 @@ import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.util.ByteString
 import emitreader.domain._
 
-class EmitReaderFlow[T](sourceType: EmitDataSourceType, decoderType: DecoderType, targetType: EmitDataTargetType[T]) {
+class EmitDataFlow[T](sourceType: EmitDataSourceType, decoderType: DecoderType, targetType: EmitDataTargetType[T]) {
   implicit val system = ActorSystem("emit-reader")
   implicit val materializer = ActorMaterializer()
 
