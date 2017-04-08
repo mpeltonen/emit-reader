@@ -10,7 +10,7 @@ class FramingStage(frameLen: Int) extends EmitEptFlowStage[ByteString, ByteStrin
     def findFrame(data: ByteString): Option[ByteString] = {
       val frameStartMarker = ByteString(0xFF.toByte, 0xFF.toByte)
       val frameStartIndex = data.indexOfSlice(frameStartMarker)
-      if (frameStartIndex >= 0 && frameStartIndex + frameLen < data.length) {
+      if (frameStartIndex >= 0 && frameStartIndex + frameLen <= data.length) {
         return Some(data.slice(frameStartIndex, frameStartIndex + frameLen))
       } else {
         None
