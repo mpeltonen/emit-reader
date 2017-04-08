@@ -18,6 +18,7 @@ class Controller(val model: ViewModel) {
   def onStopButtonClick(): Unit = {
     emitReaderFlow.foreach(_.terminate())
     model.isStarted.setValue(false)
+    emitReaderFlow = None
   }
 
   model.appQuitRequested.onChange((_, _, _) => {
