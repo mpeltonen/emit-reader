@@ -4,9 +4,9 @@ import java.nio.ByteOrder
 
 import akka.stream.Attributes
 import akka.util.{ByteIterator, ByteString}
-import emitreader.domain.{EmitCard, Punch}
+import emitreader.domain.{EmitData, Punch}
 
-class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, EmitCard] {
+class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, EmitData] {
   override def createLogic(attr: Attributes) = new EmitEptFlowStageLogic(shape) {
     implicit val byteOrder = ByteOrder.LITTLE_ENDIAN
     @inline def isLowBatteryMarkerCode(code: Int) = code == 99
@@ -32,7 +32,7 @@ class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, EmitCa
       frame.drop(5)
       val controlData = if (frameLen > 10) decodeControlData(frame) else Seq.empty
 
-      push(out, EmitCard(cardId, System.currentTimeMillis(), controlData))
+      push(out, EmitData(cardId, System.currentTimeMillis(), controlData))
       pull(in)
     }
   }

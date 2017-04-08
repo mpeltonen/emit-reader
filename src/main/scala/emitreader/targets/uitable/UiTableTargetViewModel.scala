@@ -1,9 +1,9 @@
 package emitreader.targets.uitable
 
-import emitreader.domain.EmitCard
+import emitreader.domain.EmitData
 
 import scalafx.collections.ObservableBuffer
 
 class UiTableTargetViewModel {
-  val tableViewModel: ObservableBuffer[EmitCard] = ObservableBuffer()
+  val tableViewModel: ObservableBuffer[EmitData] = ObservableBuffer()
 }
