@@ -12,6 +12,4 @@ class UiTableTarget(localViewModel: UiTableTargetViewModel) extends EmitDataTarg
       lastEmitCard = emitCard
     }
   })
-
-  override def terminate(): Unit = {}
 }

@@ -15,6 +15,4 @@ class BinaryFileTarget(localViewModel: BinaryFileTargetViewModel) extends EmitDa
     outFile.close()
     Console.println(s"Wrote Emit data to file ${fileName}")
   })
-
-  override def terminate(): Unit = {}
 }

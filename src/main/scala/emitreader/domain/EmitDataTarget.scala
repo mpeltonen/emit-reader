@@ -4,5 +4,5 @@ import akka.stream.scaladsl.Sink
 
 trait EmitDataTarget[T] {
   def getEmitDataSink(): Sink[T, _]
-  def terminate()
+  def terminate(): Unit = {}
 }
