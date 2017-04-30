@@ -17,7 +17,7 @@ class ViewModel {
   val decoderTypes: ObservableBuffer[DecoderType] = ObservableBuffer(FullDecoderType(), SplitTimeOnlyDecoderType())
   val selectedDecoderType: Property[DecoderType, DecoderType] = ObjectProperty(decoderTypes(0))
 
-  val targetTypes: ObservableBuffer[EmitDataTargetType[_]] = ObservableBuffer(new UiTableTargetType(), new RogainManagerTargetType())
+  val targetTypes: ObservableBuffer[EmitDataTargetType[_]] = ObservableBuffer(new RogainManagerTargetType(), new UiTableTargetType())
   val selectedTargetType: Property[EmitDataTargetType[_], EmitDataTargetType[_]] = ObjectProperty(targetTypes(0))
 
   val isStarted: Property[Boolean, java.lang.Boolean] = BooleanProperty(false)

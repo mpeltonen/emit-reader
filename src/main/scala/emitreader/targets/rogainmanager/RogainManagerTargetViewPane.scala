@@ -4,6 +4,7 @@ import emitreader.ui.{DefaultHBox, DefaultVBox, ViewModel}
 
 import scalafx.geometry.Pos
 import scalafx.scene.control.{Label, ListView, TextField}
+import scalafx.scene.layout.Priority
 
 class RogainManagerTargetViewPane(globalViewModel: ViewModel, localViewModel: RogainManagerTargetViewModel) extends DefaultVBox {
   val ipAddressPane = new DefaultHBox {
@@ -17,10 +18,13 @@ class RogainManagerTargetViewPane(globalViewModel: ViewModel, localViewModel: Ro
   }
 
   val logView = new ListView[CharSequence](localViewModel.logBuffer) {
-    this.setStyle("-fx-font: 12px \"Courier\";")
-
-
+    this.delegate.setStyle("-fx-font: 12px \"Courier\";")
+    prefWidth = 600
+    maxWidth = Double.MaxValue
   }
+
+  scalafx.scene.layout.VBox.setVgrow(logView, Priority.Always)
+
   localViewModel.logBuffer.onChange((buf, _) => {
     logView.scrollTo(Math.max(0, buf.size - 1))
   })

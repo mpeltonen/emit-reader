@@ -1,16 +1,14 @@
 package emitreader.targets.rogainmanager
 
-import java.nio.charset.Charset
-
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.{Actor, Props}
 import akka.util.ByteString
 
-class RogainManagerListener(log: ActorRef) extends Actor {
+class RogainManagerListener(handler: ByteString => Unit) extends Actor {
   override def receive: Receive = {
-    case bs: ByteString => log ! bs.decodeString(Charset.defaultCharset())
+    case bs: ByteString => handler(bs)
   }
 }
 
 object RogainManagerListener {
-  def props(log: ActorRef) = Props(classOf[RogainManagerListener], log)
+  def props(handler: ByteString => Unit) = Props(classOf[RogainManagerListener], handler)
 }
