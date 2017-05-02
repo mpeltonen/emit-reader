@@ -1,10 +1,11 @@
 package emitreader.targets.rogainmanager
 
 import java.nio.charset.Charset
+import java.time.{Instant, LocalDateTime, ZoneId}
 
 import akka.actor.ActorRef
 import akka.util.ByteString
-import emitreader.domain.EmitData
+import emitreader.domain.{EmitData, Punch}
 
 class RogainManagerProtocol(log: ActorRef) {
   private var initCommands = List[String]()
@@ -32,8 +33,34 @@ class RogainManagerProtocol(log: ActorRef) {
     cmd
   }
 
-  def toSendDataCommand(emitData: EmitData): ByteString = {
-    ByteString()
+  def createSendDataCommand(emitData: EmitData): ByteString = {
+    def toLocaDateTime(epochMillis: Long): LocalDateTime = {
+      Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDateTime()
+    }
+
+    def toRogainManagerTimestamp(localDateTime: LocalDateTime): Int = {
+      (localDateTime.getHour() * 3600 + localDateTime.getMinute * 60 + localDateTime.getSecond) * 100
+    }
+
+    def rogainManagerFinishTime(): Int = {
+      val finishDateTime = toLocaDateTime(emitData.lastControlPunchTime)
+      toRogainManagerTimestamp(finishDateTime)
+    }
+
+    def rogainManagerPunchingTime(punch: Punch): Int = {
+      val punchDateTime = toLocaDateTime(emitData.punchingTime(punch))
+      toRogainManagerTimestamp(punchDateTime)
+    }
+
+    val punchData = emitData.punches
+      .map(p => (p.controlCode, rogainManagerPunchingTime(p)))
+      .map(p => s"${p._1};${p._2}")
+
+    val data = s"${emitData.cardId};-1;${rogainManagerFinishTime()};6;${punchData.size};${punchData.mkString(";")}"
+    val cmd = ByteString(s"s ${data}\r\n")
+
+    logCommand(cmd)
+    cmd
   }
 
   private def popInitCmd(): Option[ByteString] = {

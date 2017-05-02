@@ -11,11 +11,12 @@ class DecodeDataStage(frameLen: Int) extends EmitEptFlowStage[ByteString, EmitDa
     implicit val byteOrder = ByteOrder.LITTLE_ENDIAN
     @inline def isLowBatteryMarkerCode(code: Int) = code == 99
     @inline def isLowBatteryMarkerPunch(punch: Seq[Byte]) = isLowBatteryMarkerCode(unsigned(punch(0)))
+    @inline def isZeroPunch(punch: Seq[Byte]) = unsigned(punch(0)) == 0
     @inline def unsigned(b: Byte) = b & 0xFF
 
     private def decodeControlData(bytes: ByteIterator): Seq[Punch] = {
       val punches = bytes.sliding(4, step = 3).take(50).foldLeft(Seq[Punch]()) { (acc, punch) => {
-        if (!isLowBatteryMarkerPunch(punch)) {
+        if (!isZeroPunch(punch) && !isLowBatteryMarkerPunch(punch)) {
           val (controlCode, punchTime) = (unsigned(punch(0)), (unsigned(punch(1)) | unsigned(punch(2)) << 8).toLong)
           val isLowBattery = (acc.length < 50 && isLowBatteryMarkerCode(unsigned(punch(3))))
           acc :+ Punch(controlCode, punchTime, isLowBattery)

@@ -22,7 +22,7 @@ class RogainManagerTarget(localViewModel: RogainManagerTargetViewModel) extends 
 
   override def getEmitDataSink(): Sink[EmitData, _] = Sink.foreach(emitData => {
     if (lastEmitCard.cardId != emitData.cardId) {
-      rogainManagerClient ! rogainManagerProtocol.toSendDataCommand(emitData)
+      rogainManagerClient ! rogainManagerProtocol.createSendDataCommand(emitData)
     }
   })
 
