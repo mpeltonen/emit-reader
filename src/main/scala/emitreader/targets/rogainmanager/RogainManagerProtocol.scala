@@ -38,18 +38,22 @@ class RogainManagerProtocol(log: ActorRef) {
       Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDateTime()
     }
 
-    def toRogainManagerTimestamp(localDateTime: LocalDateTime): Int = {
-      (localDateTime.getHour() * 3600 + localDateTime.getMinute * 60 + localDateTime.getSecond) * 100
+    def toRogainManagerTimestampCentiSec(localDateTime: LocalDateTime): Int = {
+      toRogainManagerTimestampSec(localDateTime) * 100
+    }
+
+    def toRogainManagerTimestampSec(localDateTime: LocalDateTime): Int = {
+      (localDateTime.getHour() * 3600 + localDateTime.getMinute * 60 + localDateTime.getSecond)
     }
 
     def rogainManagerFinishTime(): Int = {
       val finishDateTime = toLocaDateTime(emitData.lastControlPunchTime)
-      toRogainManagerTimestamp(finishDateTime)
+      toRogainManagerTimestampCentiSec(finishDateTime)
     }
 
     def rogainManagerPunchingTime(punch: Punch): Int = {
       val punchDateTime = toLocaDateTime(emitData.punchingTime(punch))
-      toRogainManagerTimestamp(punchDateTime)
+      toRogainManagerTimestampSec(punchDateTime)
     }
 
     val punchData = emitData.punches
