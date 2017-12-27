@@ -9,8 +9,9 @@ case class EmitData(cardId: Long, readingTime: Long, punches: Seq[Punch]) {
     DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(localDateTime)
   }
 
+  lazy val readoutControlCode: Int = punches.last.controlCode
   lazy val readoutSplitTimeSec: Long = punches.last.splitTime
-  lazy val lastControlSplitTimeSec: Long = punches.reverse.dropWhile(_.controlCode == 250).head.splitTime
+  lazy val lastControlSplitTimeSec: Long = punches.reverse.dropWhile(_.controlCode == readoutControlCode).head.splitTime
   lazy val lastControlPunchTime: Long = readingTime - ((readoutSplitTimeSec - lastControlSplitTimeSec) * 1000)
 
   def punchingTime(punch: Punch): Long = {
