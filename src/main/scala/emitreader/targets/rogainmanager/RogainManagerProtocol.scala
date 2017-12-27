@@ -56,7 +56,7 @@ class RogainManagerProtocol(log: ActorRef) {
       .map(p => (p.controlCode, rogainManagerPunchingTime(p)))
       .map(p => s"${p._1};${p._2}")
 
-    val data = s"${emitData.cardId};-1;${rogainManagerFinishTime()};6;${punchData.size};${punchData.mkString(";")}"
+    val data = s"${emitData.cardId};-1;-1;${rogainManagerFinishTime()};6;${punchData.size};${punchData.mkString(";")}"
     val cmd = ByteString(s"s ${data}\r\n")
 
     logCommand(cmd)
