@@ -57,6 +57,7 @@ class RogainManagerProtocol(log: ActorRef) {
     }
 
     val punchData = emitData.punches
+      .filter(_.controlCode != emitData.readoutControlCode)
       .map(p => (p.controlCode, rogainManagerPunchingTime(p)))
       .map(p => s"${p._1};${p._2}")
 
