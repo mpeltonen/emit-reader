@@ -48,5 +48,6 @@ class StartStopPane(controller: Controller, viewModel: ViewModel) extends Defaul
   children = Seq(title, unitTypeSelection, buttonsPane)
   minWidth = 170.0
 
+  unitTypeSelection.disable <== viewModel.isStarted
   unitTypeSelection.selectionModel().select(viewModel.decoderTypes(0))
 }

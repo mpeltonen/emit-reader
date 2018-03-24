@@ -3,7 +3,7 @@ package emitreader.ui
 import emitreader.domain.EmitDataTargetType
 
 import scalafx.scene.control.ComboBox
-import scalafx.scene.layout.Priority
+import scalafx.scene.layout.{Priority, VBox}
 
 class TargetPane(viewModel: ViewModel) extends DefaultVBox {
   val title = new TitleLabel("Target")
@@ -17,12 +17,14 @@ class TargetPane(viewModel: ViewModel) extends DefaultVBox {
 
   viewModel.selectedTargetType.onChange { (_, _, newTargetType) => {
     val targetUiPane = newTargetType.getUiPane(viewModel)
-    scalafx.scene.layout.VBox.setVgrow(targetUiPane, Priority.Always)
+    VBox.setVgrow(targetUiPane, Priority.Always)
     if (children.size() > 2) {
       children.remove(2)
     }
     children.add(targetUiPane)
   }}
+
+  targetTypeSelection.disable <== viewModel.isStarted
 
   targetTypeSelection.selectionModel().selectFirst()
 }

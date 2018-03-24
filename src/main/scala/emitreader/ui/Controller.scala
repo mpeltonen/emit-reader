@@ -12,12 +12,12 @@ class Controller(val model: ViewModel) {
     val decodeType: DecoderType = model.selectedDecoderType()
 
     emitDataFlow = Some(new EmitDataFlow(sourceType, decodeType, targetType))
-    model.isStarted.setValue(true)
+    model.isStarted() = true
   }
 
   def onStopButtonClick(): Unit = {
     emitDataFlow.foreach(_.terminate())
-    model.isStarted.setValue(false)
+    model.isStarted() = false
     emitDataFlow = None
   }
 

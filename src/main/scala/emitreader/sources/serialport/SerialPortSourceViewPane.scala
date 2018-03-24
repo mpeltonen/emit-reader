@@ -14,7 +14,7 @@ class SerialPortSourceViewPane(globalViewModel: ViewModel, localViewModel: Seria
     localViewModel.selectedSerialPortName <== selectionModel().selectedItemProperty()
   }
 
-  localViewModel.serialPortNames.appendAll(getSerialPortNames())
+  localViewModel.serialPortNames.setAll(getSerialPortNames().asJava)
 
   serialPortSelection.selectionModel().selectFirst()
   serialPortSelection.maxWidth = Double.MaxValue
@@ -24,5 +24,5 @@ class SerialPortSourceViewPane(globalViewModel: ViewModel, localViewModel: Seria
   def getSerialPortNames(): Seq[String] = getPortIdentifiers().asScala
     .filter(_.getPortType() == CommPortIdentifier.PORT_SERIAL)
     .filterNot(_.getName.startsWith("tty."))
-    .map(_.getName).toSeq
+    .map(_.getName).toSeq.sorted
 }

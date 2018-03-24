@@ -22,5 +22,7 @@ class SourcePane(viewModel: ViewModel) extends DefaultVBox {
     children.add(newSourceType.getUiPane(viewModel))
   }}
 
+  sourceTypeSelection.disable <== viewModel.isStarted
+
   sourceTypeSelection.selectionModel().selectFirst()
 }
