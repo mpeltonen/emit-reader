@@ -15,6 +15,8 @@ class MainScene(viewModel: ViewModel) extends Scene() {
   val targetPane = new TargetPane(viewModel)
   val startStopPane = new StartStopPane(controller, viewModel)
 
+  stylesheets.add(getClass.getResource("/css/application.css").toExternalForm)
+
   root = new GridPane() {
     val (col1Constr, col2Constr, col3Constr) = (
       new ColumnConstraints(300, 300, screenWidth / 4, Priority.ALWAYS, HPos.LEFT, true),

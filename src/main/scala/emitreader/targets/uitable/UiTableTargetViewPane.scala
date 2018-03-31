@@ -1,13 +1,13 @@
 package emitreader.targets.uitable
 
 import emitreader.domain.EmitData
-import emitreader.ui.{DefaultVBox, ViewModel}
+import emitreader.ui.ViewModel
 
 import scalafx.beans.property.ObjectProperty
 import scalafx.scene.control.{TableColumn, TableView}
-import scalafx.scene.layout.Priority
+import scalafx.scene.layout.{Priority, VBox}
 
-class UiTableTargetViewPane(globalViewModel: ViewModel, localViewModel: UiTableTargetViewModel) extends DefaultVBox {
+class UiTableTargetViewPane(globalViewModel: ViewModel, localViewModel: UiTableTargetViewModel) extends VBox {
   val col1 = new TableColumn[EmitData, String]("Reading Time") {
     cellValueFactory = { emitCard => ObjectProperty(emitCard.value, "formattedReadingTime", emitCard.value.formattedReadingTime) }
     prefWidth = 180

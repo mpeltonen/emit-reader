@@ -1,13 +1,14 @@
 package emitreader.sources.binaryfile
 
-import emitreader.ui.{DefaultVBox, ViewModel}
+import emitreader.ui.ViewModel
 
 import scalafx.beans.binding.Bindings.createBooleanBinding
 import scalafx.scene.control.{Button, Label}
+import scalafx.scene.layout.VBox
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 
-class BinaryFileSourceViewPane(globalViewModel: ViewModel, localViewModel: BinaryFileSourceViewModel) extends DefaultVBox {
+class BinaryFileSourceViewPane(globalViewModel: ViewModel, localViewModel: BinaryFileSourceViewModel) extends VBox {
   val fileChooser = new FileChooser {
     title = "Open Emit Data File"
     extensionFilters.addAll(new ExtensionFilter("Emit Files", "*.bin"))

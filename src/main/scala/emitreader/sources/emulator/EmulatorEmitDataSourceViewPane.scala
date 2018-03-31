@@ -1,18 +1,19 @@
 package emitreader.sources.emulator
 
-import emitreader.ui.{DefaultHBox, DefaultVBox, ViewModel}
+import emitreader.ui.ViewModel
 
 import scalafx.beans.binding.Bindings.createBooleanBinding
 import scalafx.beans.property.StringProperty
 import scalafx.scene.control.TableColumn.sfxTableColumn2jfx
 import scalafx.scene.control._
 import scalafx.scene.control.cell.TextFieldTableCell
+import scalafx.scene.layout.{HBox, VBox}
 import scalafx.util.converter.IntStringConverter
 
-class EmulatorEmitDataSourceViewPane(globalViewModel: ViewModel, localViewModel: EmulatorEmitDataSourceViewModel) extends DefaultVBox {
+class EmulatorEmitDataSourceViewPane(globalViewModel: ViewModel, localViewModel: EmulatorEmitDataSourceViewModel) extends VBox {
   val punches = localViewModel.punches
 
-  val cardId = new DefaultVBox {
+  val cardId = new VBox {
     val cardIdLabel = new Label("Card ID:")
     val cardIdField = new TextField {
       text <==> localViewModel.cardId
@@ -20,7 +21,7 @@ class EmulatorEmitDataSourceViewPane(globalViewModel: ViewModel, localViewModel:
     children = Seq(cardIdLabel, cardIdField)
   }
 
-  val addRemoveButtons = new DefaultHBox {
+  val addRemoveButtons = new HBox {
     children = Seq(
       new Button("+") {
         onAction = _ => {

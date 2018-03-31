@@ -1,13 +1,13 @@
 package emitreader.targets.rogainmanager
 
-import emitreader.ui.{DefaultHBox, DefaultVBox, ViewModel}
+import emitreader.ui.ViewModel
 
 import scalafx.geometry.Pos
 import scalafx.scene.control.{Label, ListView, TextField}
-import scalafx.scene.layout.Priority
+import scalafx.scene.layout.{HBox, Priority, VBox}
 
-class RogainManagerTargetViewPane(globalViewModel: ViewModel, localViewModel: RogainManagerTargetViewModel) extends DefaultVBox {
-  val ipAddressPane = new DefaultHBox {
+class RogainManagerTargetViewPane(globalViewModel: ViewModel, localViewModel: RogainManagerTargetViewModel) extends VBox {
+  val ipAddressPane = new HBox {
     val ipAddress = new TextField() {
       text <==> localViewModel.ipAddress
 

@@ -3,8 +3,9 @@ package emitreader.ui
 import emitreader.domain.EmitDataSourceType
 
 import scalafx.scene.control.ComboBox
+import scalafx.scene.layout.VBox
 
-class SourcePane(viewModel: ViewModel) extends DefaultVBox {
+class SourcePane(viewModel: ViewModel) extends VBox {
   val title = new TitleLabel("Source")
 
   val sourceTypeSelection = new ComboBox[EmitDataSourceType](viewModel.sourceTypes) {

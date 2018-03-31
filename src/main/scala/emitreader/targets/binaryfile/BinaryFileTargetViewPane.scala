@@ -1,6 +1,8 @@
 package emitreader.targets.binaryfile
 
-import emitreader.ui.{DefaultVBox, ViewModel}
+import emitreader.ui.ViewModel
 
-class BinaryFileTargetViewPane(globalViewModel: ViewModel, localViewModel: BinaryFileTargetViewModel) extends DefaultVBox {
+import scalafx.scene.layout.VBox
+
+class BinaryFileTargetViewPane(globalViewModel: ViewModel, localViewModel: BinaryFileTargetViewModel) extends VBox {
 }

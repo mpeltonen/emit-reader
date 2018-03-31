@@ -5,7 +5,7 @@ import emitreader.domain.EmitDataTargetType
 import scalafx.scene.control.ComboBox
 import scalafx.scene.layout.{Priority, VBox}
 
-class TargetPane(viewModel: ViewModel) extends DefaultVBox {
+class TargetPane(viewModel: ViewModel) extends VBox {
   val title = new TitleLabel("Target")
 
   val targetTypeSelection = new ComboBox[EmitDataTargetType[_]](viewModel.targetTypes) {

@@ -7,7 +7,7 @@ import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, ComboBox}
 import scalafx.scene.layout.VBox
 
-class StartStopPane(controller: Controller, viewModel: ViewModel) extends DefaultVBox {
+class StartStopPane(controller: Controller, viewModel: ViewModel) extends VBox {
   val title = new TitleLabel("Readout type")
 
   val unitTypeSelection = new ComboBox[DecoderType](viewModel.decoderTypes) {

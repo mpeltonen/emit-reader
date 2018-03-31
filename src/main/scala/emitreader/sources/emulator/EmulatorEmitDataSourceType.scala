@@ -2,7 +2,7 @@ package emitreader.sources.emulator
 
 import akka.actor.ActorRef
 import emitreader.domain.{EmitDataSource, EmitDataSourceType}
-import emitreader.ui.{DefaultVBox, ViewModel}
+import emitreader.ui.ViewModel
 
 import scalafx.scene.layout.Pane
 
