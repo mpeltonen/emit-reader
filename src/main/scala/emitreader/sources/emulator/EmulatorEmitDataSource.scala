@@ -23,6 +23,8 @@ class EmulatorEmitDataSource(flowSourceActor: ActorRef, viewModel: EmulatorEmitD
     ba(3) = ((cardId.toLong & 0xFF00) >> 8).toByte
     ba(4) = ((cardId.toLong & 0xFF0000) >> 16).toByte
 
+    ba(9) = (256 - (ba.view(2, 8).sum % 256)).toByte
+
     punches.toList.zipWithIndex.foreach { case (punch, index) => {
       ba(10 + (index * 3)) = (punch.controlCode.value & 0xFF).toByte
       ba(11 + (index * 3)) = (punch.splitTime.value & 0xFF).toByte
