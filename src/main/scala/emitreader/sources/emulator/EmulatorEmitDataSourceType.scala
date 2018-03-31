@@ -7,9 +7,11 @@ import emitreader.ui.{DefaultVBox, ViewModel}
 import scalafx.scene.layout.Pane
 
 class EmulatorEmitDataSourceType extends EmitDataSourceType {
+  val localViewModel = new EmulatorEmitDataSourceViewModel()
+
   override val displayName = "Emulator"
 
-  override def startSource(actorRef: ActorRef): EmitDataSource = new EmitDataSource {}
+  override def startSource(actorRef: ActorRef): EmitDataSource = new EmulatorEmitDataSource(actorRef, localViewModel)
 
-  override def getUiPane(viewModel: ViewModel): Pane = new DefaultVBox()
+  override def getUiPane(viewModel: ViewModel): Pane = new EmulatorEmitDataSourceViewPane(viewModel, localViewModel)
 }

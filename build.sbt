@@ -12,7 +12,8 @@ lazy val emitreader = (project in file(".")).
       "com.typesafe.akka" %% "akka-actor" % akkaVersion,
       "com.typesafe.akka" %% "akka-stream" % akkaVersion,
       "com.github.purejavacomm" % "purejavacomm" % "1.0.2",
-      "org.scalafx" %% "scalafx" % scalaFxVersion
+      "org.scalafx" %% "scalafx" % scalaFxVersion,
+      "io.reactivex.rxjava2" % "rxjavafx" % "2.2.2"
     ),
     unmanagedJars in Compile += Attributed.blank(file(s"${System.getProperty("java.home")}/lib/ext/jfxrt.jar"))
   )

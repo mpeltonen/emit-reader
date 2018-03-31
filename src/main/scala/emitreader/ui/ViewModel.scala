@@ -2,8 +2,8 @@ package emitreader.ui
 
 import emitreader.domain._
 import emitreader.sources.binaryfile.BinaryFileSourceType
+import emitreader.sources.emulator.EmulatorEmitDataSourceType
 import emitreader.sources.serialport.SerialPortSourceType
-import emitreader.targets.binaryfile.BinaryFileTargetType
 import emitreader.targets.rogainmanager.RogainManagerTargetType
 import emitreader.targets.uitable.UiTableTargetType
 
@@ -11,7 +11,7 @@ import scalafx.beans.property.{BooleanProperty, ObjectProperty, Property}
 import scalafx.collections.ObservableBuffer
 
 class ViewModel {
-  val sourceTypes: ObservableBuffer[EmitDataSourceType] = ObservableBuffer(new SerialPortSourceType, new BinaryFileSourceType())
+  val sourceTypes: ObservableBuffer[EmitDataSourceType] = ObservableBuffer(new EmulatorEmitDataSourceType(), new SerialPortSourceType, new BinaryFileSourceType())
   val selectedSourceType: Property[EmitDataSourceType, EmitDataSourceType] = ObjectProperty(sourceTypes(0))
 
   val decoderTypes: ObservableBuffer[DecoderType] = ObservableBuffer(FullDecoderType(), SplitTimeOnlyDecoderType())
