@@ -5,8 +5,8 @@ import emitreader.domain.EmitDataSourceType
 import scalafx.scene.control.ComboBox
 import scalafx.scene.layout.VBox
 
-class SourcePane(viewModel: ViewModel) extends VBox {
-  val title = new TitleLabel("Source")
+class SourceSelectionPane(viewModel: ViewModel) extends VBox {
+  styleClass += "source-selection-pane"
 
   val sourceTypeSelection = new ComboBox[EmitDataSourceType](viewModel.sourceTypes) {
     maxWidth = Double.MaxValue
@@ -14,16 +14,22 @@ class SourcePane(viewModel: ViewModel) extends VBox {
   }
 
   minWidth = 270.0
-  children = Seq(title, sourceTypeSelection)
 
   viewModel.selectedSourceType.onChange { (_, _, newSourceType) => {
     if (children.size() > 2) {
       children.remove(2)
     }
-    children.add(newSourceType.getUiPane(viewModel))
+
+    val selectedSourceUiPane = newSourceType.getUiPane(viewModel)
+    selectedSourceUiPane.styleClass += "source-ui-pane"
+    children.add(selectedSourceUiPane)
   }}
 
-  sourceTypeSelection.disable <== viewModel.isStarted
+  children = Seq(
+    new TitleLabel("Source"),
+    sourceTypeSelection
+  )
 
+  sourceTypeSelection.disable <== viewModel.isStarted
   sourceTypeSelection.selectionModel().selectFirst()
 }

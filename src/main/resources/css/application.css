@@ -1,0 +1,12 @@
+.source-ui-pane, .target-ui-pane {
+  -fx-padding: 10px 0px 0px 0px;
+  -fx-spacing: 5px;
+}
+
+.title-label {
+  -fx-font-size: 22px
+}
+
+.source-selection-pane, .target-selection-pane, .start-stop-pane {
+  -fx-padding: 10px
+}

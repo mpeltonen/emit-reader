@@ -8,7 +8,7 @@ import scalafx.scene.control.{Button, ComboBox}
 import scalafx.scene.layout.VBox
 
 class StartStopPane(controller: Controller, viewModel: ViewModel) extends VBox {
-  val title = new TitleLabel("Readout type")
+  styleClass += "start-stop-pane"
 
   val unitTypeSelection = new ComboBox[DecoderType](viewModel.decoderTypes) {
     maxWidth = Double.MaxValue
@@ -45,7 +45,7 @@ class StartStopPane(controller: Controller, viewModel: ViewModel) extends VBox {
     children = Seq(startBtn, stopBtn)
   }
 
-  children = Seq(title, unitTypeSelection, buttonsPane)
+  children = Seq(new TitleLabel("Reading type"), unitTypeSelection, buttonsPane)
   minWidth = 170.0
 
   unitTypeSelection.disable <== viewModel.isStarted
