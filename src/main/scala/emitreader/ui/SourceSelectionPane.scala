@@ -1,5 +1,7 @@
 package emitreader.ui
 
+import emitreader.config.Config
+import emitreader.config.Config.Keys
 import emitreader.domain.EmitDataSourceType
 
 import scalafx.scene.control.ComboBox
@@ -16,6 +18,8 @@ class SourceSelectionPane(viewModel: ViewModel) extends VBox {
   minWidth = 270.0
 
   viewModel.selectedSourceType.onChange { (_, _, newSourceType) => {
+    Config.setValue(Keys.SourceType, sourceTypeSelection.getSelectionModel.getSelectedIndex.toString)
+
     if (children.size() > 2) {
       children.remove(2)
     }
@@ -30,6 +34,7 @@ class SourceSelectionPane(viewModel: ViewModel) extends VBox {
     sourceTypeSelection
   )
 
+  val storedSelection = Integer.parseInt(Config.getValue(Config.Keys.SourceType, "0"))
+  sourceTypeSelection.selectionModel().select(storedSelection)
   sourceTypeSelection.disable <== viewModel.isStarted
-  sourceTypeSelection.selectionModel().selectFirst()
 }
